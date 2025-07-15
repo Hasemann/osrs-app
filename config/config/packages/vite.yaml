@@ -1,0 +1,5 @@
+pentatrion_vite:
+  build_directory: build # Matches Vite's output dir
+  dev_server:
+    enabled: true
+    url: http://localhost:5173 # Matches Vite's dev server

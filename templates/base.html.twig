@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Stats!!{% endblock %}</title>
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    {% block stylesheets %}
+        {{ vite_entry_link_tags('main.js') }}
+    {% endblock %}
+    {% block javascripts %}
+        {{ vite_entry_script_tags('main.js') }}
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+    <div x-data="osrsProgress(), " x-init="fetchStats()" class="p-2 bg-gray-200 ">
+        <h1 class="p-2 pl-1.5">
+            Stats view from OldSchool Runescape
+        </h1>
+        <div class="grid md:grid-cols-4 gap-2 grid-cols-2 sm:grid-cols-3">
+            {% for key, stats in playerStats %}
+                <div class="flex p-3 sm:p-5 gap-2 bg-white flex-col items-center border border-indigo-500/50 justify-center">
+                    <p class="uppercase text-2xl">{{ key }}</p>
+                    {#                    <img class="w-[30px] ±h-[30px]" src="{{ asset('bundles/images/'~ key~'.png') }}" alt="">#}
+                    <p class="text-1xl">{{ stats.level }} / 99 </p>
+                    <p class="italic">xp :{{ stats.xp }}</p>
+                    <br/>
+                    <p class="italic">to next level({{ stats.level + 1 }}):
+                        <br/>{{ stats.xpToNext }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {{ dump(playerStats) }}
+{% endblock %}
+<script>
+    function osrsProgress() {
+        return {
+            {#stats: {{ playerStats }},#}
+            selectedSkill: 'strength',
+            playerName: 'brokedevelop', // Replace with desired player name
+            get progressPercentage() {
+                if (!this.stats || !this.stats[this.selectedSkill]) return 0;
+                const { xp, level, xpToNext } = this.stats[this.selectedSkill];
+                if (level >= 99) return 100;
+                const xpThisLevel = xp - xpToNext;
+                const xpForNext = this.xpForLevel(level + 1) - this.xpForLevel(level);
+                return (xpThisLevel / xpForNext) * 100;
+            },
+            async fetchStats() {
+                try {
+                    const response = await fetch(`/api/osrs/${this.playerName}`);
+                    this.stats = await response.json();
+                } catch (error) {
+                    console.error('Error fetching stats:', error);
+                }
+            },
+            xpForLevel(level) {
+                // Simplified OSRS XP formula for frontend
+                let total = 0;
+                for (let i = 1; i < level; i++) {
+                    total += Math.floor(i + 300 * Math.pow(2, i / 7)) / 4;
+                }
+                return total;
+            }
+        }
+    }
+</script>
+</body>
+</html>
