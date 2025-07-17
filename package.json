@@ -1,7 +1,30 @@
 {
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17"
-  }
+    "devDependencies": {
+        "@babel/core": "^7.27.3",
+        "@babel/preset-env": "^7.27.2",
+        "@symfony/webpack-encore": "^5.1.0",
+        "autoprefixer": "^10.4.21",
+        "babel-loader": "^10.0.0",
+        "css-loader": "^7.1.2",
+        "html-webpack-plugin": "^5.6.3",
+        "postcss": "^8.5.6",
+        "postcss-loader": "^8.1.1",
+        "style-loader": "^4.0.0",
+        "tailwindcss": "^3.4.3",
+        "vue-loader": "^17.3.1",
+        "vue-style-loader": "^4.1.3",
+        "webpack": "^5.99.9",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.2.2"
+    },
+    "dependencies": {
+        "vue": "^3.5.17",
+        "vuedraggable": "^4.1.0"
+    },
+    "scripts": {
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress",
+        "dev-server": "encore dev-server --hot"
+    }
 }
