@@ -6,10 +6,15 @@ Encore
     .setPublicPath('/build')
     .addEntry('app', './assets/app.js')
     .enableVueLoader() // Enable Vue 3 support
-    .enablePostCssLoader() // Enable Tailwind via PostCSS
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableSourceMaps(!Encore.isProduction())
-    .enableVersioning(Encore.isProduction());
+    .enableVersioning(Encore.isProduction())
+    .enablePostCssLoader((options) => {
+        options.postcssOptions = {
+            config: './postcss.config.js'
+        };
+    })
 
 module.exports = Encore.getWebpackConfig();
+
