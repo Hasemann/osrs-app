@@ -1,4 +1,5 @@
-import './bootstrap.js';
-import "./app.css";
+import './app.css';
+import { createApp } from 'vue';
+import App from './vue/App.vue';
 
-console.log("Happy coding !!");
+createApp(App).mount('#app');

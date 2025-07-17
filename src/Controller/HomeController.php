@@ -26,7 +26,6 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         $playerStats = $this->osrsApiService->getFormattedPlayerStats('brokedevelop');
-
         return $this->render('/base.html.twig', ['playerStats' => $playerStats]);
     }
 }

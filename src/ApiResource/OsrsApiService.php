@@ -28,6 +28,7 @@ class OsrsApiService
 
         // / Splits the response string into an array of lines, trimming whitespace.
         $response = $connector->send(new FetchPlayerRequest($playerName));
+
         // Get the raw body as a string and format the stats
         return $this->formatPlayerStats($response->body());
     }
@@ -52,20 +53,19 @@ class OsrsApiService
             'thieving', 'slayer', 'farming', 'runecrafting', 'hunter', 'construction'
         ];
 
-//        foreach ($lines as $index => $line) {
-//            if (empty($line) || $index >= count($skillNames)) {
-//                continue;
-//            }
-//            // Splits the line into an array of values (rank, level, xp) using comma as the delimiter.
-//            $values = explode(',', $line);
-//            dd(values: $values);
-//            $stats[$skillNames[$index]] = [
-//                'level' => $this->currentLevel((int)$values[2]),
-//                'xp' => (int)$values[2],
-//                'xpToNext' => $this->xpToNextLevel((int)$values[2]),
-//            ];
-//
-//        }
+        foreach ($lines as $index => $line) {
+            if (empty($line) || $index >= count($skillNames)) {
+                continue;
+            }
+            // Splits the line into an array of values (rank, level, xp) using comma as the delimiter.
+            $values = explode(',', $line);
+            $stats[$skillNames[$index]] = [
+                'level' => $this->currentLevel((int)$values[2]),
+                'xp' => (int)$values[2],
+                'xpToNext' => $this->xpToNextLevel((int)$values[2]),
+            ];
+
+        }
 
 
         return $stats;
