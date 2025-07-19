@@ -15,7 +15,6 @@ class OsrsApiService
     public function __construct(
         protected HttpClientInterface $httpClient
     ) {
-        $this->preCumulativeXp = $this->xpForeachLevel();
     }
 
     /**
@@ -32,7 +31,22 @@ class OsrsApiService
         // Get the raw body as a string and format the stats
         return $this->formatPlayerStats($response->body());
     }
+    protected function getStartingXp(int $level): float {
+        // Validate input: level must be between 1 and 99
+        if ($level < 1 || $level > 99) {
+            return 0; // Return 0 for invalid levels
+        }
 
+        $cumulativeXp = 0; // Initialize cumulative XP
+        // Sum XP from level 1 to level-1
+        for ($k = 1; $k < $level; $k++) {
+            // OSRS formula: floor((k + 300 * 2^(k/7)) / 4)
+            $term = floor($k + 300 * pow(2, $k / 7));
+            $cumulativeXp += floor($term / 4); // Add XP for this level
+        }
+
+        return $cumulativeXp;
+    }
     /**
      * Handle the plain text response into a structured array.
      *
@@ -44,7 +58,6 @@ class OsrsApiService
 
         $lines = explode("\n", trim($body));
         $stats = [];
-
         // Define skill names in the order returned by the API
         $skillNames = [
             'overall', 'attack', 'defence', 'strength', 'hitpoints', 'ranged',
@@ -53,70 +66,52 @@ class OsrsApiService
             'thieving', 'slayer', 'farming', 'runecrafting', 'hunter', 'construction'
         ];
 
-        foreach ($lines as $index => $line) {
-            if (empty($line) || $index >= count($skillNames)) {
-                continue;
-            }
-            // Splits the line into an array of values (rank, level, xp) using comma as the delimiter.
-            $values = explode(',', $line);
-            $stats[$skillNames[$index]] = [
-                'level' => $this->currentLevel((int)$values[2]),
-                'xp' => (int)$values[2],
-                'xpToNext' => $this->xpToNextLevel((int)$values[2]),
+        foreach ($skillNames as $index => $skill) {
+            $skillData = explode(',', $lines[$index]);
+            $stats[$skill] = [
+                'rank' => (int)$skillData[0],
+                'level' => (int)$skillData[1],
+                'xp' => (int)$skillData[2],
+                'totalXpToNext' => $this->getXpNextLevel((int)$skillData[1]),
+                'startingXp' => $this->getStartingXp((int)$skillData[1])
             ];
-
         }
-
 
         return $stats;
     }
 
-    /**
-     * Function to find current level from XP
-     * @param int $currentExp
-     * @return int
-     */
-    protected function currentLevel(int $currentExp): int
+    protected function calculateTotalXP($parsedData)
     {
-        for ($level = 1; $level < 100; $level++) {
-            if ($currentExp < $this->preCumulativeXp[$level]) {
-                return $level - 1;
+        $totalXP = 0;
+        foreach ($parsedData as $skill => $data) {
+            if ($skill !== 'Overall') {
+                $totalXP += $data['xp'];
             }
         }
-        return 99;
+        return $totalXP;
     }
+
 
     /**
      * # Function to calculate XP needed for next level
-     * @param int $currentExp
+     * @param int $currentLevel
      * @return float
      */
-    protected function xpToNextLevel(int $currentExp): float
+    protected function getXpNextLevel(int $currentLevel): float
     {
-        $currentLevel = $this->currentLevel($currentExp);
+        // If at max level (99), no more XP is needed
         if ($currentLevel >= 99) {
             return 0;
         }
-        return $this->preCumulativeXp[$currentLevel + 1] - $currentExp;
-    }
 
-    /**
-     * Cumulative XP for each level (1 to 99)
-     * @return array
-     */
-    protected function xpForeachLevel(): array
-    {
-        // Initialize array with 100 zeros (index 0 to 99)
-        $cumulative_xp = array_fill(0, 100, 0);
-
-        // Loop from level 1 to 98
-        for ($level = 1; $level < 99; $level++) {
-            // Calculate XP needed for this level
-            $xp_needed = floor(($level + 300 * pow(2, $level / 7.0)) / 4);
-            // Update cumulative XP for the next level
-            $cumulative_xp[$level + 1] = $cumulative_xp[$level] + $xp_needed;
+        // Calculate total XP required for the next level
+        $nextLevel = $currentLevel + 1;
+        $totalXpForNextLevel = 0;
+        for ($k = 1; $k < $nextLevel; $k++) {
+            $term = floor($k + 300 * pow(2, $k / 7));
+            $totalXpForNextLevel += floor($term / 4);
         }
 
-        return $cumulative_xp;
+        return $totalXpForNextLevel;
     }
 }
