@@ -1,6 +1,6 @@
 <template>
-    <div class="p-2 bg-gray-200 ">
-        <h1 class="p-2 pl-1.5">
+    <div class="p-2 bg-gray-900">
+        <h1 class="p-2 text-gray-300 pl-1.5">
             Stats view from OldSchool Runescape
         </h1>
         <div class="flex flex-row justify-between">
@@ -24,26 +24,26 @@
 
             <template v-for="(stats, index) in statsData" :key="index">
                 <div
-                    class="flex p-3 sm:p-5 gap-2 bg-white flex-col items-center border border-indigo-500/50 justify-center">
-                    <div class="uppercase text-2xl" v-text="index"></div>
-                    <div class="flex flex-row">
+                    class="flex p-3 sm:p-5 gap-2 bg-gray-800 flex-col text-gray-200 items-start justify-center">
+                    <div class="flex flex-row text-sm">
+                    <div class="uppercase mr-3 " v-text="index"></div>
                         <div v-text="stats.level"></div>
                         <template v-if="index !== 'overall'">
                             <div>/99</div>
                         </template>
                     </div>
-                    <div class="flex flex-row">
-                        <div>XP:</div>
-                        <div v-text="stats.xp"></div>
-                    </div>
+<!--                    <div class="flex flex-row">-->
+<!--                        <div>XP:</div>-->
+<!--                        <div v-text="stats.xp"></div>-->
+<!--                    </div>-->
                     <template v-if="index !== 'overall'">
                         <div class="flex flex-row text-xs italic">to next level(
                             <div v-text="stats.level + 1"></div>
                             )
                             <br/>
-                            <div v-text="stats.totalXpToNext - stats.xp"></div>
+                            <div class="ml-3" v-text="stats.totalXpToNext - stats.xp"></div>
                         </div>
-                        <progress :value="progressPercentage(stats)" max="100"></progress>
+                        <progress class="h-2 rounded bg-gray-200" :value="progressPercentage(stats)" max="100"></progress>
 
                     </template>
                 </div>
