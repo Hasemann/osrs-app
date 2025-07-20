@@ -5,18 +5,24 @@
         </h1>
         <div class="flex flex-row justify-between">
             <div>
-                <div v-if="error" v-text="error" class="text-red-600 p-2"></div>
+                <div v-if="error" v-text="error" class="text-red-600 py-2"></div>
                 <input
-                    class="px-2 py-1 border"
-                    :class="{'border-green-600': !error}"
+                    class="px-2 py-1 bg-gray-800 border-transparent text-gray-200 border"
+                    :class="{
+                        'border-green-600': error === '',
+                        'border-red-600': error,
+                    }"
                     type="text"
                     v-model="playerName"
-                    :value="brokedeveloper"
                     placeholder="Enter OSRS Username"
                 />
-                <button class="btn bg-indigo-600 text-white px-3 py-1" @click="fetchStats">Fetch</button>
+                <button class="btn  bg-gray-200 text-gray-800 px-3 py-1" @click="fetchStats">Fetch</button>
             </div>
-            <grid-buttons @updateGrid="toggleGrid"></grid-buttons>
+            <div v-if="layout === 'grid'">
+                <grid-buttons @updateGrid="toggleGrid"></grid-buttons>
+            </div>
+            <layout-buttons @updateLayout="toggleLayout"></layout-buttons>
+
         </div>
 
         <div class="grid gap-2 grid-cols-2 mt-2"
@@ -28,7 +34,16 @@
                     <div class="flex justify-between w-full flex-row text-xs">
                         <div class="relative" v-text="'Level ' +  stats.level"></div>
                         <div class="flex justify-end w-full items-center">
-                            <img class="!h-6 w-auto" :src="`https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/${index}.png`" :alt="`${index} icon`" />
+                            <template v-if="index === 'runecrafting'">
+                                <img class="!h-6 w-auto"
+                                     src="https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/runecraft.png"
+                                     alt="Runecraft icon"/>
+                            </template>
+                            <template v-if="index !=='runecrafting'">
+                                <img class="!h-6 w-auto"
+                                     :src="`https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/${index}.png`"
+                                     :alt="`${index} icon`"/>
+                            </template>
                         </div>
                     </div>
 
@@ -55,7 +70,6 @@
                                 <br/>
                             </div>
                         </template>
-
                     </div>
                 </div>
             </template>
@@ -65,18 +79,20 @@
 
 <script>
 import GridButtons from "./GridButtons.vue";
+import LayoutButtons from "./LayoutButtons.vue";
 
 export default {
     name: 'OsrsStats',
-    components: {GridButtons},
+    components: {GridButtons, LayoutButtons},
     data() {
         return {
             grid: 4,
+            layout: 'grid',
             statsData: null,
             exp: 0,
             expToNext: 0,
             progress: 0,
-            playerName: 'brokedevelop',
+            playerName: '',
             isLoading: false,
             error: null
         };
@@ -99,11 +115,14 @@ export default {
             this.grid = gridInput
         },
 
+        toggleLayout(layoutInput) {
+            this.layout = layoutInput
+        },
+
         async fetchStats() {
             try {
                 if (!this.playerName || this.playerName.trim() === '') {
                     this.error = 'Please enter a valid player name.';
-                    this.statsData = null;
                     return;
                 }
                 const response = await fetch(`/api/osrs/${this.playerName}`);
@@ -113,8 +132,7 @@ export default {
                 } else {
                     this.statsData = await response.json();
                     localStorage.setItem('stats', JSON.stringify(this.statsData));
-                    console.log(this.statsData)
-                    this.error = null
+                    this.error = ''
                 }
                 // todo remove
             } catch (error) {
