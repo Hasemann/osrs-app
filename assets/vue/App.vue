@@ -24,28 +24,39 @@
 
             <template v-for="(stats, index) in statsData" :key="index">
                 <div
-                    class="flex p-3 sm:p-5 gap-2 bg-gray-800 flex-col text-gray-200 items-start justify-center">
-                    <div class="flex flex-row text-sm">
-                    <div class="uppercase mr-3 " v-text="index"></div>
-                        <div v-text="stats.level"></div>
-                        <template v-if="index !== 'overall'">
-                            <div>/99</div>
-                        </template>
-                    </div>
-<!--                    <div class="flex flex-row">-->
-<!--                        <div>XP:</div>-->
-<!--                        <div v-text="stats.xp"></div>-->
-<!--                    </div>-->
-                    <template v-if="index !== 'overall'">
-                        <div class="flex flex-row text-xs italic">to next level(
-                            <div v-text="stats.level + 1"></div>
-                            )
-                            <br/>
-                            <div class="ml-3" v-text="stats.totalXpToNext - stats.xp"></div>
+                    class="flex p-3 justify-between sm:p-5 gap-2 h-24 bg-gray-800 flex-col text-gray-200 items-start">
+                    <div class="flex justify-between w-full flex-row text-xs">
+                        <div class="relative" v-text="'Level ' +  stats.level"></div>
+                        <div class="flex justify-end w-full items-center">
+                            <img class="!h-6 w-auto" :src="`https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/${index}.png`" :alt="`${index} icon`" />
                         </div>
-                        <progress class="h-2 rounded bg-gray-200" :value="progressPercentage(stats)" max="100"></progress>
+                    </div>
 
-                    </template>
+                    <div class="flex group items-end relative bottom-0  border border-[#222020] h-8 w-full">
+                        <template v-if="index !== 'overall'">
+                            <progress class="h-full w-full border border-[#222020] rounded bg-gray-200"
+                                      :value="progressPercentage(stats)"
+                                      max="100">
+                            </progress>
+                        </template>
+
+                        <div
+                            class="capitalize text-gray-200 absolute top-0 left-0 h-full flex justify-center items-center w-full text-xs mr-3"
+                            v-text="index"></div>
+                        <template v-if="index !== 'overall'">
+                            <div
+                                class="capitalize text-gray-200 absolute top-0 left-0 h-full flex justify-end items-center w-full text-xs pr-2"
+                                v-text="parseFloat(progressPercentage(stats).toFixed(2)) + '%'"></div>
+                            <div
+                                class="hidden group-hover:flex top-[-55px] absolute border border-gray-200 bg-gray-800 p-4 flex-row text-xs">
+                                <div v-text="stats.totalXpToNext - stats.xp + ' exp '"></div>
+                                <div class="ml-1 mr-1">to level</div>
+                                <div v-text="stats.level + 1"></div>
+                                <br/>
+                            </div>
+                        </template>
+
+                    </div>
                 </div>
             </template>
         </div>
@@ -79,7 +90,9 @@ export default {
         }
     },
     mounted() {
-
+        if (localStorage.getItem('stats')) {
+            this.statsData = JSON.parse(localStorage.getItem('stats'))
+        }
     },
     methods: {
         toggleGrid(gridInput) {
@@ -94,15 +107,16 @@ export default {
                     return;
                 }
                 const response = await fetch(`/api/osrs/${this.playerName}`);
-
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => null);
                     this.error = errorData.errorMessage;
                 } else {
                     this.statsData = await response.json();
+                    localStorage.setItem('stats', JSON.stringify(this.statsData));
+                    console.log(this.statsData)
                     this.error = null
                 }
-
+                // todo remove
             } catch (error) {
                 console.error('Error fetching stats:', error);
                 this.error = error.data
@@ -118,7 +132,6 @@ export default {
             const xpTowardsNext = stats.xp - stats.startingXp;
             const xpNeededForNext = stats.totalXpToNext - stats.startingXp;
             const progress = (xpTowardsNext / xpNeededForNext) * 100;
-
             return Math.min(100, Math.max(0, progress));
         },
     },
