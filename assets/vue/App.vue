@@ -22,11 +22,11 @@
                             @click="fetchStats">Fetch
                     </button>
                 </div>
-                <div class="flex gap-5 flex-row">
-                    <layout-buttons @updateLayout="toggleLayout"></layout-buttons>
-                    <div v-if="layout === 'grid'">
+                <div class="flex gap-5 items-end flex-row">
+                    <div class="max-h-[26px]"  v-if="layout === 'grid'">
                         <grid-buttons @updateGrid="toggleGrid"></grid-buttons>
                     </div>
+                    <layout-buttons @updateLayout="toggleLayout"></layout-buttons>
                 </div>
             </div>
         </div>
@@ -41,12 +41,12 @@
                         <div class="relative" v-text="'Level ' +  stats.level"></div>
                         <div class="flex justify-end w-full items-center">
                             <template v-if="index === 'runecrafting'">
-                                <img class="!h-6 w-auto"
+                                <img class="!w-6 h-auto"
                                      src="https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/runecraft.png"
                                      alt="Runecraft icon"/>
                             </template>
                             <template v-if="index !=='runecrafting'">
-                                <img class="!h-6 w-auto"
+                                <img class="!w-6 h-auto"
                                      :src="`https://raw.githubusercontent.com/runelite/runelite/master/runelite-client/src/main/resources/skill_icons/${index}.png`"
                                      :alt="`${index} icon`"/>
                             </template>
@@ -70,7 +70,7 @@
                                 v-text="parseFloat(progressPercentage(stats).toFixed(2)) + '%'"></div>
                             <div
                                 class="hidden group-hover:flex top-[-55px] absolute border border-gray-200 bg-gray-800 p-4 flex-row text-xs">
-                                <div v-text="stats.totalXpToNext - stats.xp + ' exp '"></div>
+                                <div v-text="new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(stats.totalXpToNext - stats.xp) + ' exp '"></div>
                                 <div class="ml-1 mr-1">to level</div>
                                 <div v-text="stats.level + 1"></div>
                                 <br/>
@@ -124,7 +124,7 @@
                                     v-text="parseFloat(progressPercentage(stats).toFixed(2)) + '%'"></div>
                                 <div
                                     class="hidden group-hover:flex top-[-55px] absolute  bg-charcoal p-4 flex-row text-xs">
-                                    <div v-text="stats.totalXpToNext - stats.xp + ' exp '"></div>
+                                    <div v-text="new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(stats.totalXpToNext - stats.xp) + ' exp '"></div>
                                     <div class="ml-1 mr-1">to level</div>
                                     <div v-text="stats.level + 1"></div>
                                     <br/>
