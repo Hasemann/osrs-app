@@ -6,7 +6,17 @@ module.exports = {
         './assets/**/*.js',     // JavaScript files
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                darkNavy: '#1A1A2E',
+                charcoal: '#2C2C34',
+                slateBlue: '#4a596f',
+                softYellow: '#FFFFE0',
+                teal: '#008080',
+                cyan: '#00FFFF',
+                lightGray: '#F5F5F5',
+            }
+        }
     },
     plugins: [],
 };
