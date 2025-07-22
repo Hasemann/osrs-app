@@ -15,8 +15,12 @@ module.exports = {
                 teal: '#008080',
                 cyan: '#00FFFF',
                 lightGray: '#F5F5F5',
-            }
-        }
+            },
+            fontFamily: {
+                header: ['Inter', 'sans-serif'],
+                paragraph: ['Poppins', 'sans-serif'],
+            },
+        },
     },
     plugins: [],
 };

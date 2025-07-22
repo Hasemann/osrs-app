@@ -1,8 +1,8 @@
 <template>
     <div class="bg-charcoal h-full w-max-full overflow-hidden">
-        <div class="p-3 bg-darkNavy">
+        <div class="p-3 ">
 
-            <h1 class="p-2 text-softYellow pl-1.5">
+            <h1 class="p-2 text-softYellow font-header pl-1.5">
                 Stats view from OldSchool Runescape
             </h1>
             <div class="flex flex-row justify-between">
@@ -18,7 +18,7 @@
                         v-model="playerName"
                         placeholder="Enter OSRS Username"
                     />
-                    <button class="btn  bg-transparent border border-softYellow text-softYellow px-3 py-1"
+                    <button class="btn  bg-transparent border hover:bg-softYellow hover:text-charcoal  border-softYellow text-softYellow px-3 py-1"
                             @click="fetchStats">Fetch
                     </button>
                 </div>
@@ -32,7 +32,7 @@
         </div>
 
 
-        <div v-if="layout === 'grid'" class="grid gap-2  bg-charcoal grid-cols-2 mt-2"
+        <div v-if="layout === 'grid'" class="grid gap-2  px-2 bg-charcoal grid-cols-2 mt-4"
              :class="gridClass">
             <template v-for="(stats, index) in statsData" :key="index">
                 <div
@@ -81,14 +81,14 @@
             </template>
         </div>
         <div v-else-if="layout === 'table'" class="flex gap-2 h-full text-softYellow text-xs flex-col mt-2">
-            <div class="grid grid-cols-4">
-                <div class="text-base px-2 col-span-4 grid grid-cols-4 pb-3 border-b border-gray-200">
+            <div class="grid grid-cols-4 font-paragraph">
+                <div class="text-base px-2 col-span-4 font-header grid grid-cols-4 pb-3 border-b border-gray-200">
                     <div class="col-span-2 text-grey-200">Stats</div>
                     <div class="col-span-1 text-center text-grey-200">Level</div>
                     <div class="col-span-1 text-center text-grey-200">Progress</div>
                 </div>
                 <template v-for="(stats, index, key) in statsData" :key="key">
-                    <div class="flex flex-row items-center py-2 col-span-2"
+                    <div class="flex flex-row items-center py-1 col-span-2"
                          :class="key % 2 === 0 ? 'bg-slateBlue' : 'bg-charcoal'">
                         <div class="p-2 " v-if="index === 'runecrafting'">
                             <img class="!w-6 h-auto"
@@ -101,7 +101,7 @@
                                  :alt="`${index} icon`"/>
                         </div>
                         <div
-                            class="capitalize text-softYellow pl-3 h-full flex items-center w-full text-xs mr-3"
+                            class="capitalize text-softYellow pl-3 h-full flex items-center w-full mr-3"
                             v-text="index"></div>
                     </div>
                     <div class="col-span-1 py-2 flex justify-center"
