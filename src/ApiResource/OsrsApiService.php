@@ -80,7 +80,7 @@ class OsrsApiService
         return $stats;
     }
 
-    protected function calculateTotalXP($parsedData)
+    protected function calculateTotalXP(array $parsedData): int
     {
         $totalXP = 0;
         foreach ($parsedData as $skill => $data) {
