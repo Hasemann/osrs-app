@@ -9,7 +9,7 @@
                 <div>
                     <div v-if="error" v-text="error" class="text-red-600 py-2"></div>
                     <input
-                        class="px-2 py-1  bg-transparent border-softYellow text-softYellow border"
+                        class="px-2 py-1  bg-transparent border-softYellow text-softYellow focus-visible:outline-none focus:outline-none border"
                         :class="{
                         'border-green-600': error === '',
                         'border-red-600': error,
